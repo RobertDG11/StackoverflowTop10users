@@ -13,9 +13,11 @@ import java.util.ArrayList;
 
 public class UserAdapter extends ArrayAdapter<User> {
     int layout;
-    UserAdapter(Context context, ArrayList<User> users, int layout) {
+    private boolean isTablet;
+    UserAdapter(Context context, ArrayList<User> users, int layout, boolean isTablet) {
         super(context, 0, users);
         this.layout = layout;
+        this.isTablet = isTablet;
     }
 
     @NonNull
@@ -32,6 +34,12 @@ public class UserAdapter extends ArrayAdapter<User> {
             holder.userImageView = convertView.findViewById(R.id.userPhoto);
             holder.positionInTop = convertView.findViewById(R.id.position);
             holder.reputation = convertView.findViewById(R.id.reputation);
+            if (isTablet) {
+                holder.location = convertView.findViewById(R.id.location);
+                holder.goldBadges = convertView.findViewById(R.id.goldBadges);
+                holder.silverBadges = convertView.findViewById(R.id.silverBadges);
+                holder.bronzeBadges = convertView.findViewById(R.id.bronzeBadges);
+            }
             convertView.setTag(holder);
         }
         else {
@@ -48,6 +56,12 @@ public class UserAdapter extends ArrayAdapter<User> {
             holder.positionInTop.setImageResource(user.getPositionInTop());
         }
         holder.reputation.setText(String.format("%s reputation", user.getReputation()));
+        if (isTablet) {
+            holder.location.setText(String.format("Location: %s", user.getLocation()));
+            holder.goldBadges.setText(String.format("Gold badges: %s", user.getBadges()[2]));
+            holder.silverBadges.setText(String.format("Silver badges: %s", user.getBadges()[1]));
+            holder.bronzeBadges.setText(String.format("Bronze badges: %s", user.getBadges()[0]));
+        }
 
         return convertView;
     }

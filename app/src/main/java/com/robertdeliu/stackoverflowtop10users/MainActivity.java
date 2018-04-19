@@ -36,21 +36,24 @@ public class MainActivity extends AppCompatActivity {
                 "&sort=reputation&site=stackoverflow");
 
         listView = findViewById(R.id.listView);
-        userAdapter = new UserAdapter(this, users, R.layout.relative_layout);
+        userAdapter = new UserAdapter(this, users, R.layout.relative_layout,
+                getResources().getBoolean(R.bool.isTablet));
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(MainActivity.this, UserInfoActivity.class);
-                intent.putExtra("name", users.get(i).getName());
-                intent.putExtra("user photo", users.get(i).getProfileImage());
-                intent.putExtra("reputation", users.get(i).getReputation());
-                intent.putExtra("location", users.get(i).getLocation());
-                intent.putExtra("badges", users.get(i).getBadges());
-                startActivity(intent);
+        if (!getResources().getBoolean(R.bool.isTablet)) {
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Intent intent = new Intent(MainActivity.this, UserInfoActivity.class);
+                    intent.putExtra("name", users.get(i).getName());
+                    intent.putExtra("user photo", users.get(i).getProfileImage());
+                    intent.putExtra("reputation", users.get(i).getReputation());
+                    intent.putExtra("location", users.get(i).getLocation());
+                    intent.putExtra("badges", users.get(i).getBadges());
+                    startActivity(intent);
 
-            }
-        });
+                }
+            });
+        }
 
     }
 
