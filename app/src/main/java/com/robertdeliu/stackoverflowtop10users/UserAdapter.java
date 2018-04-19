@@ -14,15 +14,10 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 public class UserAdapter extends ArrayAdapter<User> {
-    UserAdapter(Context context, ArrayList<User> users) {
+    int layout;
+    UserAdapter(Context context, ArrayList<User> users, int layout) {
         super(context, 0, users);
-    }
-
-    private class ViewHolder {
-        private TextView nameTextView;
-        private ImageView userImageView;
-        private ImageView positionInTop;
-        private TextView reputation;
+        this.layout = layout;
     }
 
     @NonNull
@@ -30,9 +25,10 @@ public class UserAdapter extends ArrayAdapter<User> {
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
 
         ViewHolder holder;
+        User user = getItem(position);
 
         if (convertView == null || position < 3) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.relative_layout, parent, false);
+            convertView = LayoutInflater.from(getContext()).inflate(layout, parent, false);
             holder = new ViewHolder();
             holder.nameTextView = convertView.findViewById(R.id.name);
             holder.userImageView = convertView.findViewById(R.id.userPhoto);
@@ -44,18 +40,16 @@ public class UserAdapter extends ArrayAdapter<User> {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        User user = getItem(position);
-
-        Picasso.with(getContext()).load(user.getProfileImage()).into(holder.userImageView);
-
         assert user != null;
+        Picasso.get().load(user.getProfileImage()).into(holder.userImageView);
+
         holder.nameTextView.setText(user.getName());
         if (position >= 3) {
             holder.positionInTop.setVisibility(View.INVISIBLE);
         } else {
             holder.positionInTop.setImageResource(user.getPositionInTop());
         }
-        holder.reputation.setText(user.getReputation() + " reputation");
+        holder.reputation.setText(String.format("%s reputation", user.getReputation()));
 
         return convertView;
     }

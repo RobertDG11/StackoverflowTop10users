@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -25,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     ListView listView;
     UserAdapter userAdapter;
-    ArrayList<User> users = new ArrayList<>();
+    public ArrayList<User> users = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +42,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(MainActivity.this, UserInfoActivity.class);
+                intent.putExtra("name", users.get(i).getName());
+                intent.putExtra("user photo", users.get(i).getProfileImage());
+                intent.putExtra("reputation", users.get(i).getReputation());
+                intent.putExtra("location", users.get(i).getLocation());
+                intent.putExtra("badges", users.get(i).getBadges());
                 startActivity(intent);
+
             }
         });
 
