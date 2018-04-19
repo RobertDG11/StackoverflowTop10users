@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <View
+        android:id="@+id/centerShim"
+        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:visibility="invisible"
+        android:layout_centerHorizontal="true">
+    </View>
+
+    <RelativeLayout
+        android:id="@+id/leftSide"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/centerShim"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/centerShim">
+
+        <ImageView
+            android:id="@+id/userPhoto"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            app:srcCompat="@mipmap/ic_launcher"
+            android:layout_marginLeft="100dp"
+            android:layout_marginStart="100dp"
+            android:layout_marginTop="60dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="35sp"
+            android:layout_alignBottom="@+id/userPhoto"
+            android:layout_toRightOf="@+id/userPhoto"
+            android:layout_toEndOf="@+id/userPhoto"
+            android:layout_marginLeft="30dp"
+            android:layout_marginStart="30dp" />
+
+        <ImageView
+            android:id="@+id/position"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="60dp"
+            android:layout_marginLeft="44dp"
+            android:layout_marginStart="44dp"
+            app:srcCompat="@mipmap/ic_launcher" />
+
+
+        <TextView
+            android:id="@+id/reputation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="25sp"
+            android:layout_alignBottom="@+id/position"
+            android:layout_marginLeft="30dp"
+            android:layout_marginStart="30dp"
+            android:layout_toRightOf="@+id/userPhoto"
+            android:layout_toEndOf="@+id/userPhoto" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/rightSide"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@+id/centerShim"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/centerShim">
+
+
+        <TextView
+            android:id="@+id/location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            android:layout_marginLeft="50dp"
+            android:textSize="20sp"
+            android:text=""
+            android:layout_marginStart="50dp" />
+
+        <TextView
+            android:id="@+id/goldBadges"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="50dp"
+            android:textSize="20sp"
+            android:text=""
+            android:layout_marginStart="50dp" />
+
+        <TextView
+            android:id="@+id/silverBadges"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="50dp"
+            android:textSize="20sp"
+            android:text=""
+            android:layout_marginStart="50dp" />
+
+        <TextView
+            android:id="@+id/bronzeBadges"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="50dp"
+            android:textSize="20sp"
+            android:text=""
+            android:layout_marginStart="50dp" />
+    </LinearLayout>
+
+
+</RelativeLayout>
