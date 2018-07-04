@@ -1,19 +1,24 @@
 package com.robertdeliu.stackoverflowtop10users;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -25,7 +30,8 @@ public class MainActivity extends AppCompatActivity {
 
     ListView listView;
     UserAdapter userAdapter;
-    ArrayList<User> users = new ArrayList<>();
+    public ArrayList<User> users = new ArrayList<>();
+    static File dataFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,16 +43,24 @@ public class MainActivity extends AppCompatActivity {
                 "&sort=reputation&site=stackoverflow");
 
         listView = findViewById(R.id.listView);
-        userAdapter = new UserAdapter(this, users, R.layout.relative_layout);
+        userAdapter = new UserAdapter(this, users, R.layout.relative_layout,
+                getResources().getBoolean(R.bool.isTablet));
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(MainActivity.this, UserInfoActivity.class);
-                startActivity(intent);
-            }
-        });
+        if (!getResources().getBoolean(R.bool.isTablet)) {
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Intent intent = new Intent(MainActivity.this, UserInfoActivity.class);
+                    intent.putExtra("name", users.get(i).getName());
+                    intent.putExtra("user photo", users.get(i).getProfileImage());
+                    intent.putExtra("reputation", users.get(i).getReputation());
+                    intent.putExtra("location", users.get(i).getLocation());
+                    intent.putExtra("badges", users.get(i).getBadges());
+                    startActivity(intent);
 
+                }
+            });
+        }
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -63,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
 
                 url = new URL(urls[0]);
                 urlConnection = (HttpURLConnection) url.openConnection();
-
                 InputStream in = urlConnection.getInputStream();
                 InputStreamReader reader = new InputStreamReader(in);
 
@@ -73,8 +86,9 @@ public class MainActivity extends AppCompatActivity {
                     data.append(current);
                     read = reader.read();
                 }
+                dataFile = wrtieFileOnInternalStorage(getBaseContext(), "JSONData", data.toString());
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.i("No network", e.toString());
             }
 
             return data.toString();
@@ -84,43 +98,54 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String data) {
             super.onPostExecute(data);
 
-            try {
-                JSONObject jsonObject = new JSONObject(data);
-                String usersString = jsonObject.getString("items");
-                JSONArray userInfo = new JSONArray(usersString);
-                int medal = -1;
+            if (isNetworkConnected(getBaseContext())) {
+                JSONParser parser = new JSONParser(data, users);
+                users = parser.getUsers();
 
-                for (int i = 0; i < userInfo.length(); i++) {
-                    JSONObject item = userInfo.getJSONObject(i);
-                    String badgesList = item.getString("badge_counts");
-                    JSONObject badges = new JSONObject(badgesList);
-                    String[] bdgs = {badges.getString("bronze"),
-                                     badges.getString("silver"),
-                                     badges.getString("gold")};
+            } else {
+                if (dataFile == null) {
+                    Toast.makeText(getBaseContext(), "Need internet connection!", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    try {
+                        BufferedReader fis = new BufferedReader(new FileReader(dataFile));
+                        String info = fis.readLine();
 
-                    if (i == 0) {
-                        medal = R.drawable.gold;
-                    } else if (i == 1) {
-                        medal = R.drawable.silver;
-                    } else if (i == 2) {
-                        medal = R.drawable.bronze;
+                        JSONParser parser = new JSONParser(info, users);
+                        users = parser.getUsers();
+
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-
-                    users.add(new User.Builder()
-                            .withProfileImage(item.getString("profile_image"))
-                            .withName(item.getString("display_name"))
-                            .withPositionInTop(medal)
-                            .withReputation(item.getString("reputation"))
-                            .withLocation(item.getString("location"))
-                            .withBadges(bdgs)
-                            .build());
                 }
 
-            listView.setAdapter(userAdapter);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
+            listView.setAdapter(userAdapter);
         }
+    }
+
+    public static boolean isNetworkConnected(Context ctx) {
+        ConnectivityManager cm = (ConnectivityManager)
+                ctx.getSystemService (Context.CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        return ni != null && ni.isConnectedOrConnecting();
+    }
+
+    public File wrtieFileOnInternalStorage(Context context,String fileName, String data){
+        File file = new File(context.getFilesDir(), fileName);
+        FileOutputStream fos;
+        try{
+            fos = openFileOutput(fileName, Context.MODE_PRIVATE);
+            fos.write(data.getBytes());
+            fos.close();
+
+        }catch (Exception e){
+            e.printStackTrace();
+
+        }
+
+        return file;
     }
 }
